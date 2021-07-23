@@ -1,0 +1,142 @@
+
+#Skript plugin を使用したcheckpoint システム(version2)です。
+#アスレチックサーバーを開きたいがシステムを作れないという方におすすめです。
+#このcheckpointシステムを導入するだけで基本的なcheckpointシステムを使用することが可能になります。
+#
+#マルチプラグインサーバーのみで使用可能です。
+#サーバーの構築に関しては各自自己責任で行ってください。
+#world guard pluginを導入することで
+#設定した保護区域内ごとにCPを保存することが可能です。
+#worldguard(保護区域設定方法)についての参考記事↓
+#https://seesaawiki.jp/byvanillaserver/d/WorldGuard
+#(flag未設定によるOP権限未保持者がボタンなどを押せなくなる現象にご注意ください)
+#
+#UUIDで保存しているためMCIDを変更してもデータは消えません。
+#エメラルド右クリックでcpに移動。
+#Skript(+このskriptファイル)の導入関して: https://sp.ch.nicovideo.jp/cch/blomaga/ar614485
+#上記のちぇるしー様の記事などを参考にして各自で導入してください。
+#
+#エメラルドを右クリックすることで最後に設定したCheckpointに移動できます
+#
+#/adcps でその場にcpを設定(OP権限保持者のみ使用可)
+#/cp でcpに移動
+#看板の一行目にcpと書くとその場にcpを設定できる看板を作成可能(空中設定不可)
+#看板の一行目にblock とおくと看板のところにcpを設定可能(空中設定可)
+#スポンジに乗るとCPに戻されます。(端に乗ることで回避可能)
+#一部動作確認をしていないので不具合あるかもです...(下記のtwitterIDに不具合報告してくれるとありがたい)
+#不具合報告以外に質問などもございましたら下記のtwitterIDにて気軽にご相談ください。
+#このskript万が一の事態があっても責任はおいかねます。
+#
+#また、このSkriptの改変は許可しますが、盗作は厳禁です。
+#2次配布をしたい場合は私に許可を御願いします。
+#
+#製作者twitter: @rooyrooy10
+#
+#以上で説明を終わります。良いアスレチックライフを...
+
+
+#{dasdwwwww}の変数は何か条件文書く使うときようのスペースとしておいてます。
+
+
+
+#playercp set
+on right click on a sign:
+    line 3 of the clicked block is "&8player":
+        if {dasdwwwww} is not set:
+            player is on ground
+            set {%region at player%.%uuid of player%.cp} to location of player
+            command "/execute %player% ~ ~ ~ /playsound minecraft:block.note.pling ambient %player% ~ ~ ~ 300"
+            message "&a&lPlayerCP≫&6set your checkpoint&7(%region at player%)"
+            if {blockcp.%region at player%.%uuid of player%} is equal to 2:
+                set {blockcp.%region at player%.%uuid of player%} to 1
+                stop
+            if {blockcp.%region at player%.%uuid of player%} is not set:
+                set {blockcp.%region at player%.%uuid of player%} to 1
+                stop
+
+           
+#blockCP set
+on right click on a sign:
+    line 3 of the clicked block is "&8Block":
+        if {dasdwwwww} is not set:
+            set {%region at player%.%uuid of player%.blockcp} to location 0.5 meter under location of clicked block
+            command "/execute %player% ~ ~ ~ /playsound minecraft:block.note.pling ambient %player% ~ ~ ~ 300"
+            message "&e&lBlockCP≫&6set your checkpoint&7(%region at player%)"
+            if {blockcp.%region at player%.%uuid of player%} is not set:
+                set {blockcp.%region at player%.%uuid of player%} to 2
+                stop
+            if {blockcp.%region at player%.%uuid of player%} is equal to 1:
+                set {blockcp.%region at player%.%uuid of player%} to 2
+                stop
+ 
+on sign change:
+    line 1 is "cp"
+    set line 4 to "&9&l=&c&lParkour&9&l="
+    set line 1 to "&b≫&2CheckPoint&b≪"
+    set line 3 to "&8player"
+    message "&a[PlayerCP]&fcpを設置しました"
+    message "&a[CP]&f1行目をblockにして設置するとblockcpになります"
+
+#cpreturn
+on rightclick with emerald:
+    if {dasdwwwww} is not set: 
+        add 1 to {cpkaisuu}
+        if {blockcp.%region at player%.%uuid of player%} is equal to 1:
+            teleport player to {%region at player%.%uuid of player%.cp}
+            if {%region at player%.%uuid of player%.cp} is not set:
+                send "&cCPが設定されていません。"
+        if {blockcp.%region at player%.%uuid of player%} is equal to 2:
+            teleport player to {%region at player%.%uuid of player%.blockcp}
+            if {%region at player%.%uuid of player%.blockcp} is not set:
+                send "&cCPが設定されていません。"
+        if {blockcp.%region at player%.%uuid of player%} is not set:
+            set {blockcp.%region at player%.%uuid of player%} to 1
+ 
+ 
+on sign change:
+    line 1 is "block"
+    set line 4 to "&9&l=&c&lParkour&9&l="
+    set line 1 to "&b≫&2CheckPoint&b≪"
+    set line 3 to "&8Block"
+    send "blockCP看板を設定しました。"
+
+#スポンジに乗るとCPに移動(端に乗ることで回避可能)
+on walking on sponge:
+    if {dasdwwwww} is not set:
+        player's gamemode is adventure
+        if {blockcp.%region at player%.%uuid of player%} is equal to 1:
+            teleport player to {%region at player%.%uuid of player%.cp}
+        if {blockcp.%region at player%.%uuid of player%} is equal to 2:
+            teleport player to {%region at player%.%uuid of player%.blockcp}
+        if {blockcp.%region at player%.%uuid of player%} is not set:
+            set {blockcp.%region at player%.%uuid of player%} to 1
+ 
+ #ビーコンの上に石炭ブロックがある状態で石炭ブロックに乗るとCP削除(アドベンチャーモードのプレイヤーのみ)
+on walking on coal block:
+    block under the event-block is beacon:
+        player's gamemode is adventure
+        set {blockcp.%region at player%.%uuid of player%} to 1
+        delete {%region at player%.%uuid of player%.cp}
+        message "&8Checkpointが排除されました。"
+    
+command /adcps:
+    permission:sk.admin
+    trigger:
+        set {%region at player%.%uuid of player%.cp} to location of player
+        set {blockcp.%region at player%.%uuid of player%} to 1
+        message "&6チェックポイントを設定しました!(%region at player%)"
+
+command /cp:
+    trigger:
+        add 1 to {cpkaisuu}
+        if {blockcp.%region at player%.%uuid of player%} is equal to 1:
+            teleport player to {%region at player%.%uuid of player%.cp}
+            if {%region at player%.%uuid of player%.cp} is not set:
+                send "&cCPが設定されていません。" to player
+        if {blockcp.%region at player%.%uuid of player%} is equal to 2:
+            teleport player to {%region at player%.%uuid of player%.blockcp}
+            if {%region at player%.%uuid of player%.blockcp} is not set:
+                send "&cCPが設定されていません。" to player
+        if {blockcp.%region at player%.%uuid of player%} is not set:
+            set {blockcp.%region at player%.%uuid of player%} to 1
+ 
