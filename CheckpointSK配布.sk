@@ -75,7 +75,7 @@ on sign change:
     set line 1 to "&b≫&2CheckPoint&b≪"
     set line 3 to "&8player"
     message "&a[PlayerCP]&fcpを設置しました"
-    message "&a[CP]&f1行目をblockにして設置するとblockcpになります"
+    message "&71行目をblockにして設置するとblockcpになります"
 
 #cpreturn
 on rightclick with emerald:
